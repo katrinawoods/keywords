@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Keyword Cards</title>
+<style>
+ .container {
+   display: flex;
+   flex-wrap: wrap;
+   gap: 10px;
+   padding: 20px;
+ }
+ .card {
+   background-color: lightblue;
+   padding: 10px;
+   border-radius: 5px;
+   cursor: pointer;
+ }
+</style>
+</head>
+<body>
+<div class="container" id="container">
+</div>
+<script>
+ const container = document.getElementById('container');
+ function createCard(word) {
+   const card = document.createElement('div');
+   card.classList.add('card');
+   card.textContent = word;
+   card.addEventListener('mousedown', startDragging);
+   card.addEventListener('touchstart', startDragging);
+   container.appendChild(card);
+ }
+ function startDragging(event) {
+   let offsetX, offsetY, startX, startY, dragItem;
+   if (event.type === 'mousedown') {
+     dragItem = event.target;
+     offsetX = event.clientX - dragItem.getBoundingClientRect().left;
+     offsetY = event.clientY - dragItem.getBoundingClientRect().top;
+     startX = event.clientX;
+     startY = event.clientY;
+     window.addEventListener('mousemove', drag);
+     window.addEventListener('mouseup', endDragging);
+   } else if (event.type === 'touchstart') {
+     dragItem = event.target;
+     const touch = event.touches[0];
+     offsetX = touch.clientX - dragItem.getBoundingClientRect().left;
+     offsetY = touch.clientY - dragItem.getBoundingClientRect().top;
+     startX = touch.clientX;
+     startY = touch.clientY;
+     window.addEventListener('touchmove', drag);
+     window.addEventListener('touchend', endDragging);
+   }
+   function drag(event) {
+     event.preventDefault();
+     if (dragItem) {
+       if (event.type === 'mousemove') {
+         dragItem.style.left = event.clientX - offsetX + 'px';
+         dragItem.style.top = event.clientY - offsetY + 'px';
+       } else if (event.type === 'touchmove') {
+         const touch = event.touches[0];
+         dragItem.style.left = touch.clientX - offsetX + 'px';
+         dragItem.style.top = touch.clientY - offsetY + 'px';
+       }
+     }
+   }
+   function endDragging() {
+     if (dragItem) {
+       window.removeEventListener('mousemove', drag);
+       window.removeEventListener('mouseup', endDragging);
+       window.removeEventListener('touchmove', drag);
+       window.removeEventListener('touchend', endDragging);
+       dragItem = null;
+     }
+   }
+ }
+ // Function to convert input text into draggable cards
+ function convertToCards(inputText) {
+   const words = inputText.split(/\s+/);
+   words.forEach(word => {
+     createCard(word);
+   });
+ }
+ // Example usage:
+ const userInput = prompt("Enter your text:");
+ convertToCards(userInput);
+</script>
+</body>
+</html>
